@@ -1,0 +1,6 @@
+.github
+.vscode
+coverage
+.idea
+.travis
+example
