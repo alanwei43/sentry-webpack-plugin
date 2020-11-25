@@ -31,7 +31,7 @@ const config = {
 ```javascript
 const crypto = require('crypto');
 
-module.exports = function (code, compilation) {
+module.exports = function (code, { asset, pattern, compilation }) {
   const options = this.options;
   const hash = crypto.createHash('md5').update(code).digest('hex');
   return `${code}

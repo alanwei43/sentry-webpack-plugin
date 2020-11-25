@@ -441,7 +441,7 @@ class SentryCliPlugin {
       }
       if (typeof item.handler === "string" && fs.existsSync(item.handler)) {
         const sourceCode = asset.source();
-        const promise = Promise.resolve(require(path.resolve(item.handler)).bind(this)(sourceCode, compilation))
+        const promise = Promise.resolve(require(path.resolve(item.handler)).bind(this)(sourceCode, { asset, compilation, pattern: item }))
           .then(code => {
             if (typeof code === "string") {
               compilation.assets[item.asset] = (new RawModule(code)).source();
