@@ -336,6 +336,13 @@ class SentryCliPlugin {
             `Unable to determine version. Make sure to include \`release\` option or use the environment that supports auto-detection https://docs.sentry.io/cli/releases/#creating-releases`
           );
         }
+        if (typeof this.options.releaseHoook === "string" && fs.existsSync(this.options.releaseHoook)) {
+          return require(path.resolve(this.options.releaseHoook))(proposedVersion, compilation)
+            .then(val => {
+              release = val || release;
+              return this.cli.releases.new(release);
+            });
+        }
 
         return this.cli.releases.new(release);
       })
