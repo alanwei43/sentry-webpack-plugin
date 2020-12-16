@@ -430,25 +430,28 @@ class SentryCliPlugin {
      * }]
      */
     const replacePattern = this.options["replacePattern"];
-    if (!replacePattern || !Array.isArray(replacePattern)) {
-      return Promise.resolve();
-    }
+
     const wait = [];
-    for (let item of replacePattern) {
-      const asset = compilation.assets[item.asset];
-      if (!asset) {
-        continue;
+    if (Array.isArray(replacePattern)) {
+      for (let item of replacePattern) {
+        const asset = compilation.assets[item.asset];
+        if (!asset) {
+          continue;
+        }
+        if (typeof item.handler === "string" && fs.existsSync(item.handler)) {
+          const sourceCode = asset.source();
+          const promise = Promise.resolve(require(path.resolve(item.handler)).bind(this)(sourceCode, { asset, compilation, pattern: item }))
+            .then(code => {
+              if (typeof code === "string") {
+                compilation.assets[item.asset] = (new RawModule(code)).source();
+              }
+            });
+          wait.push(promise);
+        }
       }
-      if (typeof item.handler === "string" && fs.existsSync(item.handler)) {
-        const sourceCode = asset.source();
-        const promise = Promise.resolve(require(path.resolve(item.handler)).bind(this)(sourceCode, { asset, compilation, pattern: item }))
-          .then(code => {
-            if (typeof code === "string") {
-              compilation.assets[item.asset] = (new RawModule(code)).source();
-            }
-          });
-        wait.push(promise);
-      }
+    } else if (typeof replacePattern === "string") {
+      const promise = require(path.resolve(replacePattern)).bind(this)(compilation);
+      wait.push(promise);
     }
     return wait.length === 0 ? Promise.resolve() : Promise.all(wait);
   }

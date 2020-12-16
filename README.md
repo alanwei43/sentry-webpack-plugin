@@ -16,10 +16,11 @@ const config = {
         ignore: ["node_modules", "webpack.config.js"],
         urlPrefix: `cdn address`,
         // 以下是新增选项
-        replacePattern: [{
+        replacePattern: [{ 
           asset: "app.min.js",  // 表示要对源码执行 handler 配置的处理
           handler: "./scripts/add-comments.js" // 
         }],
+        // replacePattern: "./scripts/replace.js", 也支持传入字符串
         cleanUp: "./scripts/clean-map-files.js" // 执行清理工作
     }),
   ],
