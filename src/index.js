@@ -71,8 +71,8 @@ function attachAfterEmitHook(compiler, callback) {
   }
 }
 function attachEmitHook(compiler, callback) {
-  if (compiler.hooks && compiler.hooks.afterEmit) {
-    compiler.hooks.emit.tap('SentryCliPlugin', callback);
+  if (compiler.hooks && compiler.hooks.emit) {
+    compiler.hooks.emit.tapAsync('SentryCliPlugin', callback);
   } else {
     compiler.plugin('emit', callback);
   }
