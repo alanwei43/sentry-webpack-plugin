@@ -70,6 +70,13 @@ function attachAfterEmitHook(compiler, callback) {
     compiler.plugin('after-emit', callback);
   }
 }
+function attachEmitHook(compiler, callback) {
+  if (compiler.hooks && compiler.hooks.afterEmit) {
+    compiler.hooks.emit.tap('SentryCliPlugin', callback);
+  } else {
+    compiler.plugin('emit', callback);
+  }
+}
 
 class SentryCliPlugin {
   constructor(options = {}) {
@@ -336,8 +343,9 @@ class SentryCliPlugin {
             `Unable to determine version. Make sure to include \`release\` option or use the environment that supports auto-detection https://docs.sentry.io/cli/releases/#creating-releases`
           );
         }
-        if (typeof this.options.releaseHoook === "string" && fs.existsSync(this.options.releaseHoook)) {
-          return require(path.resolve(this.options.releaseHoook))(proposedVersion, compilation)
+        const releaseHook = this.options.releaseHook || this.options.releaseHoook;
+        if (typeof releaseHook === "string" && fs.existsSync(releaseHook)) {
+          return require(path.resolve(releaseHook))(proposedVersion, compilation)
             .then(val => {
               release = val || release;
               return this.cli.releases.new(release);
@@ -407,7 +415,7 @@ class SentryCliPlugin {
       this.injectRelease(compilerOptions);
     }
 
-    compiler.plugin('emit', (compilation, callback) => {
+    attachEmitHook(compiler, (compilation, callback) => {
       this.replaceContent(compilation).then(() => callback());
     });
 

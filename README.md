@@ -21,7 +21,8 @@ const config = {
           handler: "./scripts/add-comments.js" // 
         }],
         // replacePattern: "./scripts/replace.js", 也支持传入字符串
-        cleanUp: "./scripts/clean-map-files.js" // 执行清理工作
+        cleanUp: "./scripts/clean-map-files.js", // 执行清理工作
+        releaseHook: "./scripts/release-hook.js", // 支持自定义release名称
     }),
   ],
 };
